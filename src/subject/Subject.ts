@@ -18,6 +18,18 @@ export class Subject<T> extends Observable<T> {
         });
     }
 
+    public asObservable(): Observable<T> {
+        return new Observable<T>((observer: SafeObserver<T>): Subscription => {
+            this._observers.push(observer);
+
+            return {
+                unsubscribe: (): void => {
+                    this.unsbuscribeObserver(observer);
+                },
+            };
+        });
+    }
+
     public next(value: T): void {
         if (this._isUnsubscribed) {
             return;

@@ -1,3 +1,4 @@
+import { Observable } from '@apestaartje/observable/observable';
 import { Subject } from '@apestaartje/observable/subject/Subject';
 import { Subscription } from '@apestaartje/observable/observable/Subscription';
 
@@ -52,5 +53,27 @@ describe('Subject', (): void => {
         subject.unsubscribe();
 
         expect(completeSpy).toHaveBeenCalled();
+    });
+
+    fit('asObservable', (): void => {
+        const subject: Subject<number> = new Subject();
+        const observable: Observable<number> = subject.asObservable();
+        const nextSpy1: jasmine.Spy = spyOn(observer1, 'next');
+
+        subject.next(1);
+
+        const subscription: Subscription = observable.subscribe(observer1);
+
+        expect(nextSpy1).not.toHaveBeenCalled();
+
+        subject.next(1974);
+
+        expect(nextSpy1).toHaveBeenCalledWith(1974);
+
+        subscription.unsubscribe();
+
+        subject.next(23);
+
+        expect(nextSpy1).toHaveBeenCalledTimes(1);
     });
 });
